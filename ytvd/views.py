@@ -9,7 +9,6 @@ from django.http import FileResponse, HttpResponse
 
 class GetVideoURL(APIView):
     def post(self, request):
-        global video_url
         video_url = request.data['url']
         obj = YouTube(video_url)
         obj_streams = obj.streams.filter(progressive=True).all()
@@ -31,7 +30,8 @@ class DownloadVideo(APIView):
         homedir = os.path.expanduser('~')
         path = homedir + "/Downloads"
         res = request.data['res']
-        obj = YouTube(video_url)
+        url = request.data['url']
+        obj = YouTube(url)
         obj.streams.get_by_resolution(res).download(path)
         response = "Video Downloded"
         return response
