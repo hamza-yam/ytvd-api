@@ -26,6 +26,7 @@ class GetVideoURL(APIView):
 
 
 class DownloadVideo(APIView):
+    """
     def post(self, request):
         homedir = os.path.expanduser('~')
         path = homedir + "/Downloads"
@@ -34,4 +35,19 @@ class DownloadVideo(APIView):
         obj = YouTube(url)
         obj.streams.get_by_resolution(res).download(path)
         response = "Video Downloded"
+        return response
+    """
+
+    def post(self, request):
+        file_path = settings.MEDIA_ROOT
+        res = request.data['res']
+        url = request.data['url']
+        obj = YouTube(url)
+        obj.streams.get_by_resolution(res).download(file_path)
+        video_title = obj.title
+        # Open file
+        with open(settings.MEDIA_ROOT+video_title+'.mp4', 'rb') as f:
+            data = f.read()
+        response = HttpResponse(data, content_type='application/video.mp4')
+        response['Content-Disposition'] = 'attachment; filename=NameOfFile'
         return response
